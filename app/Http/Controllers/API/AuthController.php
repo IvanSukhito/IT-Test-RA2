@@ -53,10 +53,25 @@ class AuthController extends Controller
 
     public function checkProfile(Request $request){
         $user = $request->user();
+
+        if(!$user){
+            $message = 'Failed you are still not login';
+            return responseFailed($message, 422);
+        }
+
         $message = 'Success check profile';
 
         return responseSuccess($message, $user);
     }
+
+    public function logout(Request $request){
+        $user = $request->user();
+        $message = 'Success Logout';
+        $getLogout = $user->currentAccessToken()->delete();
+
+        return responseSuccess($message, $getLogout);
+    }
+
     private static function getData($user, $token){
         $data = [
             'user' => $user,
