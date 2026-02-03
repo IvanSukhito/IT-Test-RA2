@@ -35,12 +35,17 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request->email)->first();
+
         if(!$user){
+
            $message = 'Email is unavailable';
            return responseFailed($message);
+
         }elseif(!Hash::check($request->password, $user->password)){
+
            $message = 'Your password is incorrect';
            return responseFailed($message);
+
         }
 
         $token = $user->createToken($request->device_name)->plainTextToken;
@@ -67,12 +72,13 @@ class AuthController extends Controller
     public function logout(Request $request){
         $user = $request->user();
         $message = 'Success Logout';
-        $getLogout = $user->currentAccessToken()->delete();
+        $data = $user->currentAccessToken()->delete();
 
-        return responseSuccess($message, $getLogout);
+        return responseSuccess($message, $data);
     }
 
     private static function getData($user, $token){
+
         $data = [
             'user' => $user,
             'token' => $token,

@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('ewallets', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->default(0);
+            $table->string('ewallet_name')->nullable();
+            $table->decimal('ewallet_balance',18,2)->default(0);
+            $table->string('ewallet_code')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
