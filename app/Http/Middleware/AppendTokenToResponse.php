@@ -18,7 +18,7 @@ class AppendTokenToResponse
     {
         $response = $next($request);
 
-        if ($response instanceof \Illuminate\Http\JsonResponse && $request->user()) {
+        if ($response instanceof JsonResponse && $request->user()) {
             $data = $response->getData(true);
 
             // Selipkan token yang sedang aktif
