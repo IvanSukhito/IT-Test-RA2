@@ -10,13 +10,21 @@ if(! function_exists('responseSuccess')){
     }
 }
 
-
 if(! function_exists('responseFailed')){
     function responseFailed($message, $httpCode = null){
         return response()->json([
             'successs' => false,
             'message' => $message,
         ], isset($httpCode) ? $httpCode : 404);
+    }
+}
+
+if(! function_exists('checkUsers')){
+    function checkUsers($user = null){
+        if(!$user){
+            $message = 'Invalid Users';
+            return responseFailed($message);
+        }
     }
 }
 

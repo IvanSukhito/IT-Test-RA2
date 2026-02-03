@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Application;
 use Illuminate\Auth\AuthenticationException;
+use App\Http\Middleware\AppendTokenToResponse;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
@@ -15,15 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //
-        $middleware->redirectTo(
-            guests: 'home',
-            users: 'login'
-        );
+        $middleware->appendToGroup('api', [AppendTokenToResponse::class]);
     })->withExceptions(function (Exceptions $exceptions): void {
         //
         $exceptions->render(function (AuthenticationException $e, Request $request) {
         if ($request->is('api/*')) {
-            $message = 'Token not valid';
+            $message = 'User and token invalid';
             $httpStatus = 401;
             return responseFailed($message, $httpStatus);
         }
