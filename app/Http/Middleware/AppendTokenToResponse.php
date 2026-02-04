@@ -23,7 +23,7 @@ class AppendTokenToResponse
 
             // Selipkan token yang sedang aktif
             // Jika ingin meniru GM (selalu kirim token), pakai cara ini:
-            $data['data']['_token'] = $request->bearerToken();
+            $data['_token'] = $request->bearerToken();
 
             $response = $response->setData($data);
         }

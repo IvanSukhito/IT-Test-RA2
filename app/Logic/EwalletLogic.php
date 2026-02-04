@@ -4,6 +4,7 @@ namespace App\Logic;
 
 use App\Models\User;
 use App\Models\Ewallet;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 
 class EwalletLogic
@@ -52,6 +53,71 @@ class EwalletLogic
             DB::rollback();
             throw $th;
         }
+    }
+
+    public function checkBalance(User $user){
+        $data = $user->ewallet->first();
+
+        $data = $data->only(['rupiah_balance']);
+
+        return $data;
+    }
+
+    public function transfer(User $user, $receiver, $amount){
+
+        // dd($receiver);
+        $sender = $user;
+
+        // $receiverEwallet = Ewallet::with(['user'])->where('user_id',$receiver->id)->first();
+        $senderEwallet = $this->getOrCreateEwallet($user);
+        $receiverEwallet = $this->getOrCreateEwallet($receiver);
+
+        if(!$receiverEwallet){
+          throw new \Exception('Receiver has no wallet');
+        }
+        if($receiverEwallet->id == $senderEwallet->id){
+          throw new \Exception('You cannot transfer to the same wallet');
+        }
+        if ($senderEwallet->ewallet_balance < $amount) {
+        throw new \Exception('Insufficient balance');
+        }
+
+        DB::beginTransaction();
+        try {
+            $senderEwallet->decrement('ewallet_balance', $amount);
+            $receiverEwallet->increment('ewallet_balance', $amount);
+
+            $senderEwallet->transactionSender()->create([
+                'trx_code'            => 'TRF-OUT-' . time(),
+                'amount'              => $amount,
+                'direction'           => 'OUT',
+                'status'              => 'success',
+                'ewallet_sender_id'   => $senderEwallet->id,   // Tambahkan ini!
+                'ewallet_receiver_id' => $receiverEwallet->id, // Kirim ke ID wallet penerima
+            ]);
+
+            $receiverEwallet->transactionReceiver()->create([
+                'trx_code'            => 'TRF-IN-' . time(),
+                'amount'              => $amount,
+                'direction'           => 'IN',
+                'status'              => 'success',
+                'ewallet_sender_id'   => $senderEwallet->id,   // Tambahkan ini!
+                'ewallet_receiver_id' => $receiverEwallet->id, // Masuk ke ID wallet penerima
+            ]);
+
+            DB::commit();
+            $data = [
+                'senderEwallet' => $senderEwallet,
+                'receiverEwallet' => $receiverEwallet,
+            ];
+            return $data;
+
+        } catch (\Throwable $th) {
+
+            DB::rollback();
+            throw $th;
+        }
+
     }
 
     //next  bikin transfer

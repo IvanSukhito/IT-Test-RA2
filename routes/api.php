@@ -17,5 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/ewallet', [EwalletController::class, 'test']);
     Route::post('/create-ewallet', [EwalletController::class, 'create']);
     Route::post('/topup', [EwalletController::class, 'topup']);
-
+    Route::get('/check-balance',[EwalletController::class,'checkBalance']);
+    Route::post('/transfer', [EwalletController::class, 'transfer']);
+    Route::get('/check-history', [EwalletController::class, 'checkHistory']);
 });

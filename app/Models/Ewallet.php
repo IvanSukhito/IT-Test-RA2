@@ -19,6 +19,12 @@ class Ewallet extends Model
         'ewallet_code',
     ];
 
+    protected $appends = ['rupiah_balance'];
+
+    public function getRupiahBalanceAttribute(){
+        return 'Rp.' . number_format($this->attributes['ewallet_balance'],0, ',','.');
+    }
+
     /**
      * Get the user that owns the Ewallet
      *
