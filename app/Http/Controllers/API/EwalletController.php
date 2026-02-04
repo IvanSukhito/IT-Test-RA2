@@ -158,6 +158,7 @@ class EwalletController extends Controller
         ->latest()
         ->get();
 
+        // dd($data->first()->ewalletReceiver->user->name);
         $message = 'Success Check History';
         $getData = TransactionResource::collection($data);
         // dd($getData);

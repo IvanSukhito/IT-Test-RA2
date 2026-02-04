@@ -26,6 +26,8 @@ class TransactionResource extends JsonResource
         $data = [
             'id' => $this->id,
             'trx_code' => $this->trx_code,
+            'sender' => $this->ewalletSender->user->name,
+            'receiver' => $this->ewalletReceiver->user->name ?? null,
             'amount' => $this->amount,
             'rupiah_amount' => 'Rp.' . number_format($this->amount,0,',','.'),
             'type' => $senderID ? 'OUT' : 'IN',
